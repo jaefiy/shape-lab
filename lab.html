@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Geometry Lab: Composite Shapes, Area & Perimeter</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --secondary: #0f766e;
+      --accent: #dc2626;
+      --bg-main: #f8fafc;
+      --card-bg: #ffffff;
+      --border-color: #cbd5e1;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      line-height: 1.5;
+      padding: 20px;
+    }
+
+    header {
+      max-width: 1100px;
+      margin: 0 auto 24px auto;
+      text-align: center;
+      background: var(--card-bg);
+      padding: 24px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border-color);
+    }
+
+    header h1 {
+      font-size: 2.2rem;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    .lab-grid {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 24px;
+    }
+
+    @media (max-width: 868px) {
+      .lab-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border-color);
+    }
+
+    .card h2 {
+      font-size: 1.3rem;
+      margin-bottom: 16px;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Controls Panel */
+    .controls-panel {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 16px;
+      align-items: center;
+      justify-content: space-between;
+      background: #f1f5f9;
+      padding: 12px 16px;
+      border-radius: 8px;
+    }
+
+    .shape-selectors {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .selector-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    select, button {
+      font-family: inherit;
+      font-size: 0.95rem;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      background-color: #ffffff;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    select:focus, button:focus {
+      outline: 2px solid var(--primary);
+      outline-offset: 1px;
+    }
+
+    .btn-action {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      font-weight: 600;
+    }
+
+    .btn-action:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      background-color: #e2e8f0;
+      color: var(--text-main);
+      border: 1px solid #cbd5e1;
+      font-weight: 600;
+    }
+
+    .btn-secondary:hover {
+      background-color: #cbd5e1;
+    }
+
+    /* Toggle Switch */
+    .toggle-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #fef2f2;
+      border: 1px solid #fca5a5;
+      padding: 8px 12px;
+      border-radius: 8px;
+      user-select: none;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #ccc;
+      transition: .3s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: var(--accent);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+
+    .toggle-label {
+      font-weight: 700;
+      color: #991b1b;
+      font-size: 0.95rem;
+    }
+
+    /* Canvas Area */
+    .canvas-container {
+      position: relative;
+      width: 100%;
+      height: 460px;
+      background: #ffffff;
+      border: 2px dashed #cbd5e1;
+      border-radius: 8px;
+      overflow: hidden;
+      touch-action: none;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: grab;
+    }
+
+    canvas:active {
+      cursor: grabbing;
+    }
+
+    /* Sidebar Stats & Info */
+    .stats-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .stat-box {
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .stat-box.highlight {
+      background: #eff6ff;
+      border-color: #93c5fd;
+    }
+
+    .stat-title {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .stat-value {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .shape-breakdown {
+      margin-top: 8px;
+      font-size: 0.9rem;
+      color: #475569;
+    }
+
+    .explanation-box {
+      background: #fff1f2;
+      border: 1px solid #fecdd3;
+      border-radius: 8px;
+      padding: 14px;
+      color: #9f1239;
+      font-size: 0.92rem;
+      line-height: 1.45;
+    }
+
+    .explanation-box h4 {
+      font-weight: 700;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #881337;
+    }
+
+    /* Shape Sorting Activity Section */
+    .activity-section {
+      margin-top: 10px;
+    }
+
+    .activity-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .score-badge {
+      background: #dcfce7;
+      color: #166534;
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid #86efac;
+    }
+
+    .matching-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 20px;
+    }
+
+    .matching-card {
+      background: var(--card-bg);
+      border: 2px solid var(--border-color);
+      border-radius: 10px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .matching-card.correct {
+      border-color: #22c55e;
+      background: #f0fdf4;
+    }
+
+    .matching-card.incorrect {
+      border-color: #ef4444;
+      background: #fef2f2;
+    }
+
+    .shape-preview-canvas {
+      width: 150px;
+      height: 110px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      margin-bottom: 12px;
+    }
+
+    .matching-card h3 {
+      font-size: 1rem;
+      margin-bottom: 12px;
+      color: var(--text-main);
+    }
+
+    .drop-target {
+      width: 100%;
+      min-height: 52px;
+      border: 2px dashed #94a3b8;
+      border-radius: 8px;
+      background: #fafafa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .drop-target.drag-over {
+      background: #e0f2fe;
+      border-color: var(--primary);
+    }
+
+    .drop-target.filled {
+      border-style: solid;
+      background: #ffffff;
+      color: var(--primary-hover);
+      border-color: var(--primary);
+    }
+
+    /* Draggable items palette */
+    .palette-container {
+      margin-top: 24px;
+      background: #f1f5f9;
+      padding: 16px;
+      border-radius: 10px;
+      border: 1px dashed #cbd5e1;
+    }
+
+    .palette-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    .draggable-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .draggable-tag {
+      background: #ffffff;
+      border: 2px solid var(--primary);
+      color: var(--primary-hover);
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: grab;
+      user-select: none;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      touch-action: none;
+    }
+
+    .draggable-tag:active {
+      cursor: grabbing;
+      transform: scale(1.04);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .draggable-tag.selected {
+      background: var(--primary);
+      color: white;
+    }
+
+    .draggable-tag.used {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .feedback-msg {
+      margin-top: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      min-height: 20px;
+    }
+
+    .feedback-msg.correct { color: #166534; }
+    .feedback-msg.incorrect { color: #991b1b; }
+
+    /* Footer / Helper instructions */
+    .instructions-hint {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-top: 8px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Geometry Exploration Lab</h1>
+    <p>Explore composite shapes by combining basic geometric figures. Drag and snap shapes together to discover how perimeter and area change!</p>
+  </header>
+
+  <div class="container">
+    <!-- Main Interactive Canvas & Stats -->
+    <div class="lab-grid">
+      <div class="card">
+        <h2>📐 Interactive Composite Shape Canvas</h2>
+
+        <div class="controls-panel">
+          <div class="shape-selectors">
+            <div class="selector-group">
+              <label for="shape1-select">Shape A:</label>
+              <select id="shape1-select">
+                <option value="square">Square (4×4)</option>
+                <option value="rectangle" selected>Rectangle (6×3)</option>
+                <option value="triangle">Right Triangle (4×3)</option>
+              </select>
+              <button id="rotate1-btn" class="btn-secondary" title="Rotate Shape A 90 degrees">🔄 Rotate</button>
+            </div>
+
+            <div class="selector-group">
+              <label for="shape2-select">Shape B:</label>
+              <select id="shape2-select">
+                <option value="rectangle">Rectangle (6×3)</option>
+                <option value="square">Square (4×4)</option>
+                <option value="triangle" selected>Right Triangle (4×3)</option>
+              </select>
+              <button id="rotate2-btn" class="btn-secondary" title="Rotate Shape B 90 degrees">🔄 Rotate</button>
+            </div>
+          </div>
+
+          <button id="reset-canvas-btn" class="btn-secondary">Reset Canvas</button>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+          <div class="toggle-container">
+            <label class="switch">
+              <input type="checkbox" id="show-shared-toggle" checked>
+              <span class="slider"></span>
+            </label>
+            <span class="toggle-label">Show shared side</span>
+          </div>
+          <span style="font-size: 0.85rem; color: var(--text-muted);">💡 Drag shapes near each other to snap edges together.</span>
+        </div>
+
+        <div class="canvas-container">
+          <canvas id="geometry-canvas"></canvas>
+        </div>
+      </div>
+
+      <!-- Live Measurements Sidebar -->
+      <div class="stats-panel">
+        <div class="card stat-box highlight">
+          <div class="stat-title">Composite Area</div>
+          <div class="stat-value" id="total-area-val">0 sq units</div>
+          <div class="shape-breakdown" id="area-breakdown-val">Shape A + Shape B</div>
+        </div>
+
+        <div class="card stat-box highlight">
+          <div class="stat-title">Composite Perimeter</div>
+          <div class="stat-value" id="total-perimeter-val">0 units</div>
+          <div class="shape-breakdown" id="perimeter-breakdown-val">Outer edge length total</div>
+        </div>
+
+        <div class="card explanation-box" id="explanation-box">
+          <h4>📌 Joined Edge Explanation</h4>
+          <p id="explanation-text">
+            When two shapes join along a side, that internal edge is inside the composite figure. Because perimeter only measures the outer boundary, the shared side is <strong>not counted</strong> in the total perimeter!
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Shape Sorting Mini Activity -->
+    <div class="card activity-section">
+      <div class="activity-header">
+        <h2>🧩 Mini Activity: Shape Decomposition Matching</h2>
+        <div style="display: flex; gap: 12px; align-items: center;">
+          <span class="score-badge" id="activity-score">Score: 0 / 4</span>
+          <button id="reset-activity-btn" class="btn-secondary">Reset Activity</button>
+        </div>
+      </div>
+      <p style="color: var(--text-muted); margin-bottom: 16px; font-size: 0.95rem;">
+        Match each composite shape image below to the correct pair of basic shapes used to form it. Drag options or tap a tag then tap a target box!
+      </p>
+
+      <div class="matching-grid" id="matching-grid">
+        <!-- Matching cards rendered dynamically by JS -->
+      </div>
+
+      <div class="palette-container">
+        <div class="palette-title">Basic Shape Combination Options:</div>
+        <div class="draggable-items" id="draggable-palette">
+          <!-- Palette items rendered dynamically by JS -->
+        </div>
+      </div>
+      <div class="instructions-hint">
+        Tip: Touch screen users can tap an option above to select it, then tap any shape card's drop box to place it.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- Canvas & Geometry Setup ---
+    const canvas = document.getElementById('geometry-canvas');
+    const ctx = canvas.getContext('2d');
+
+    const GRID_SIZE = 30; // 30px per grid unit
+    let scaleDPI = window.devicePixelRatio || 1;
+
+    // Canvas state
+    let shapes = [];
+    let activeShape = null;
+    let dragOffset = { x: 0, y: 0 };
+    let showSharedSide = true;
+
+    // UI elements
+    const totalAreaVal = document.getElementById('total-area-val');
+    const areaBreakdownVal = document.getElementById('area-breakdown-val');
+    const totalPerimeterVal = document.getElementById('total-perimeter-val');
+    const perimeterBreakdownVal = document.getElementById('perimeter-breakdown-val');
+    const explanationText = document.getElementById('explanation-text');
+    const showSharedToggle = document.getElementById('show-shared-toggle');
+
+    // Helper: Local vertices for shapes at rotation = 0
+    const SHAPE_DEFINITIONS = {
+      square: {
+        name: 'Square',
+        shortName: 'Square (4×4)',
+        area: 16,
+        baseVertices: [{x:0, y:0}, {x:4, y:0}, {x:4, y:4}, {x:0, y:4}]
+      },
+      rectangle: {
+        name: 'Rectangle',
+        shortName: 'Rectangle (6×3)',
+        area: 18,
+        baseVertices: [{x:0, y:0}, {x:6, y:0}, {x:6, y:3}, {x:0, y:3}]
+      },
+      triangle: {
+        name: 'Right Triangle',
+        shortName: 'Right Triangle (4×3)',
+        area: 6,
+        baseVertices: [{x:0, y:0}, {x:4, y:0}, {x:0, y:3}]
+      }
+    };
+
+    function getRotatedLocalVertices(type, rotationDeg) {
+      const def = SHAPE_DEFINITIONS[type];
+      const base = def.baseVertices;
+      const rad = (rotationDeg * Math.PI) / 180;
+      const cos = Math.round(Math.cos(rad));
+      const sin = Math.round(Math.sin(rad));
+
+      let rotated = base.map(p => ({
+        x: p.x * cos - p.y * sin,
+        y: p.x * sin + p.y * cos
+      }));
+
+      let minX = Math.min(...rotated.map(p => p.x));
+      let minY = Math.min(...rotated.map(p => p.y));
+
+      return rotated.map(p => ({
+        x: Math.round(p.x - minX),
+        y: Math.round(p.y - minY)
+      }));
+    }
+
+    function getWorldVertices(shape) {
+      const local = getRotatedLocalVertices(shape.type, shape.rotation);
+      return local.map(p => ({
+        x: shape.x + p.x,
+        y: shape.y + p.y
+      }));
+    }
+
+    function getShapeBoundingBox(shape) {
+      const verts = getWorldVertices(shape);
+      const xs = verts.map(p => p.x);
+      const ys = verts.map(p => p.y);
+      return {
+        minX: Math.min(...xs),
+        maxX: Math.max(...xs),
+        minY: Math.min(...ys),
+        maxY: Math.max(...ys),
+        width: Math.max(...xs) - Math.min(...xs),
+        height: Math.max(...ys) - Math.min(...ys)
+      };
+    }
+
+    // Edge geometry helpers
+    function getPolygonEdges(vertices) {
+      const edges = [];
+      for (let i = 0; i < vertices.length; i++) {
+        const p1 = vertices[i];
+        const p2 = vertices[(i + 1) % vertices.length];
+        const len = Math.hypot(p2.x - p1.x, p2.y - p1.y);
+        edges.push({ p1, p2, len });
+      }
+      return edges;
+    }
+
+    function findSegmentOverlap(a, b, c, d) {
+      const cross = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
+      if (Math.abs(cross) > 1e-5) return null;
+
+      const isHorizontal = Math.abs(b.x - a.x) > Math.abs(b.y - a.y);
+      let tA = isHorizontal ? a.x : a.y;
+      let tB = isHorizontal ? b.x : b.y;
+      let tC = isHorizontal ? c.x : c.y;
+      let tD = isHorizontal ? d.x : d.y;
+
+      let min1 = Math.min(tA, tB), max1 = Math.max(tA, tB);
+      let min2 = Math.min(tC, tD), max2 = Math.max(tC, tD);
+
+      let overlapMin = Math.max(min1, min2);
+      let overlapMax = Math.min(max1, max2);
+
+      if (overlapMax - overlapMin > 1e-5) {
+        const getPoint = (tVal) => {
+          if (isHorizontal) {
+            const ratio = (tVal - a.x) / (b.x - a.x);
+            return { x: tVal, y: a.y + ratio * (b.y - a.y) };
+          } else {
+            const ratio = (tVal - a.y) / (b.y - a.y);
+            return { x: a.x + ratio * (b.x - a.x), y: tVal };
+          }
+        };
+
+        const p1 = getPoint(overlapMin);
+        const p2 = getPoint(overlapMax);
+        const length = Math.hypot(p2.x - p1.x, p2.y - p1.y);
+        return { p1, p2, length };
+      }
+
+      return null;
+    }
+
+    function getShapePerimeter(shape) {
+      const edges = getPolygonEdges(getWorldVertices(shape));
+      return edges.reduce((sum, e) => sum + e.len, 0);
+    }
+
+    class InteractiveShape {
+      constructor(id, type, x, y, label, color, strokeColor) {
+        this.id = id;
+        this.type = type;
+        this.x = x;
+        this.y = y;
+        this.rotation = 0;
+        this.label = label;
+        this.color = color;
+        this.strokeColor = strokeColor;
+      }
+    }
+
+    function initShapes() {
+      const type1 = document.getElementById('shape1-select').value;
+      const type2 = document.getElementById('shape2-select').value;
+
+      shapes = [
+        new InteractiveShape('shape1', type1, 3, 4, 'Shape A', 'rgba(59, 130, 246, 0.45)', '#1d4ed8'),
+        new InteractiveShape('shape2', type2, 9, 4, 'Shape B', 'rgba(16, 185, 129, 0.45)', '#047857')
+      ];
+    }
+
+    function resizeCanvas() {
+      const container = canvas.parentElement;
+      const width = container.clientWidth;
+      const height = container.clientHeight;
+
+      scaleDPI = window.devicePixelRatio || 1;
+      canvas.width = width * scaleDPI;
+      canvas.height = height * scaleDPI;
+      canvas.style.width = width + 'px';
+      canvas.style.height = height + 'px';
+
+      ctx.resetTransform();
+      ctx.scale(scaleDPI, scaleDPI);
+
+      drawCanvas();
+    }
+
+    function drawGrid(width, height) {
+      ctx.save();
+      ctx.strokeStyle = '#e2e8f0';
+      ctx.lineWidth = 1;
+
+      for (let x = 0; x <= width; x += GRID_SIZE) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
+        ctx.stroke();
+      }
+
+      for (let y = 0; y <= height; y += GRID_SIZE) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+        ctx.stroke();
+      }
+
+      ctx.fillStyle = '#cbd5e1';
+      for (let x = 0; x <= width; x += GRID_SIZE * 5) {
+        for (let y = 0; y <= height; y += GRID_SIZE * 5) {
+          ctx.beginPath();
+          ctx.arc(x, y, 2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+      ctx.restore();
+    }
+
+    function isPointInPolygon(point, vertices) {
+      let x = point.x, y = point.y;
+      let inside = false;
+      for (let i = 0, j = vertices.length - 1; i < vertices.length; j = i++) {
+        let xi = vertices[i].x, yi = vertices[i].y;
+        let xj = vertices[j].x, yj = vertices[j].y;
+
+        let intersect = ((yi > y) !== (yj > y)) &&
+            (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+        if (intersect) inside = !inside;
+      }
+      return inside;
+    }
+
+    function getCanvasGridPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+      const clientY = e.clientY !== undefined ? e.clientY : (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
+
+      const px = clientX - rect.left;
+      const py = clientY - rect.top;
+
+      return {
+        x: px / GRID_SIZE,
+        y: py / GRID_SIZE,
+        px: px,
+        py: py
+      };
+    }
+
+    function handlePointerDown(e) {
+      const pos = getCanvasGridPos(e);
+
+      for (let i = shapes.length - 1; i >= 0; i--) {
+        const shape = shapes[i];
+        const verts = getWorldVertices(shape);
+        if (isPointInPolygon(pos, verts)) {
+          activeShape = shape;
+          dragOffset.x = pos.x - shape.x;
+          dragOffset.y = pos.y - shape.y;
+
+          shapes.splice(i, 1);
+          shapes.push(shape);
+
+          canvas.setPointerCapture(e.pointerId);
+          drawCanvas();
+          break;
+        }
+      }
+    }
+
+    function handlePointerMove(e) {
+      if (!activeShape) return;
+
+      const pos = getCanvasGridPos(e);
+      let rawX = pos.x - dragOffset.x;
+      let rawY = pos.y - dragOffset.y;
+
+      let snapX = Math.round(rawX);
+      let snapY = Math.round(rawY);
+
+      const otherShape = shapes.find(s => s !== activeShape);
+      if (otherShape) {
+        const otherBBox = getShapeBoundingBox(otherShape);
+        const myBBoxLocal = getShapeBoundingBox({ ...activeShape, x: 0, y: 0 });
+
+        const snapDistance = 0.8;
+
+        const xCandidates = [
+          { val: otherBBox.minX, dist: Math.abs(rawX - otherBBox.minX) },
+          { val: otherBBox.maxX, dist: Math.abs(rawX - otherBBox.maxX) },
+          { val: otherBBox.minX - myBBoxLocal.width, dist: Math.abs(rawX - (otherBBox.minX - myBBoxLocal.width)) },
+          { val: otherBBox.maxX - myBBoxLocal.width, dist: Math.abs(rawX - (otherBBox.maxX - myBBoxLocal.width)) }
+        ];
+
+        const yCandidates = [
+          { val: otherBBox.minY, dist: Math.abs(rawY - otherBBox.minY) },
+          { val: otherBBox.maxY, dist: Math.abs(rawY - otherBBox.maxY) },
+          { val: otherBBox.minY - myBBoxLocal.height, dist: Math.abs(rawY - (otherBBox.minY - myBBoxLocal.height)) },
+          { val: otherBBox.maxY - myBBoxLocal.height, dist: Math.abs(rawY - (otherBBox.maxY - myBBoxLocal.height)) }
+        ];
+
+        xCandidates.sort((a, b) => a.dist - b.dist);
+        yCandidates.sort((a, b) => a.dist - b.dist);
+
+        if (xCandidates[0].dist < snapDistance) {
+          snapX = Math.round(xCandidates[0].val);
+        }
+        if (yCandidates[0].dist < snapDistance) {
+          snapY = Math.round(yCandidates[0].val);
+        }
+      }
+
+      const canvasWidthGrid = (canvas.width / scaleDPI) / GRID_SIZE;
+      const canvasHeightGrid = (canvas.height / scaleDPI) / GRID_SIZE;
+      const myBBox = getShapeBoundingBox({ ...activeShape, x: snapX, y: snapY });
+
+      if (myBBox.minX < 0) snapX += -myBBox.minX;
+      if (myBBox.maxX > canvasWidthGrid) snapX -= (myBBox.maxX - canvasWidthGrid);
+      if (myBBox.minY < 0) snapY += -myBBox.minY;
+      if (myBBox.maxY > canvasHeightGrid) snapY -= (myBBox.maxY - canvasHeightGrid);
+
+      activeShape.x = snapX;
+      activeShape.y = snapY;
+
+      drawCanvas();
+    }
+
+    function handlePointerUp(e) {
+      if (activeShape) {
+        try {
+          canvas.releasePointerCapture(e.pointerId);
+        } catch (err) {}
+        activeShape = null;
+        drawCanvas();
+      }
+    }
+
+    canvas.addEventListener('pointerdown', handlePointerDown);
+    canvas.addEventListener('pointermove', handlePointerMove);
+    canvas.addEventListener('pointerup', handlePointerUp);
+    canvas.addEventListener('pointercancel', handlePointerUp);
+
+    function getSharedSegments() {
+      if (shapes.length < 2) return [];
+      const edges1 = getPolygonEdges(getWorldVertices(shapes[0]));
+      const edges2 = getPolygonEdges(getWorldVertices(shapes[1]));
+
+      const shared = [];
+      for (let e1 of edges1) {
+        for (let e2 of edges2) {
+          const overlap = findSegmentOverlap(e1.p1, e1.p2, e2.p1, e2.p2);
+          if (overlap && overlap.length > 0.01) {
+            shared.push(overlap);
+          }
+        }
+      }
+      return shared;
+    }
+
+    function formatNum(num) {
+      return Math.round(num * 100) / 100;
+    }
+
+    function updateMeasurements(sharedSegments) {
+      const s1 = shapes.find(s => s.id === 'shape1') || shapes[0];
+      const s2 = shapes.find(s => s.id === 'shape2') || shapes[1];
+
+      const area1 = SHAPE_DEFINITIONS[s1.type].area;
+      const area2 = SHAPE_DEFINITIONS[s2.type].area;
+      const totalArea = area1 + area2;
+
+      totalAreaVal.textContent = `${formatNum(totalArea)} sq units`;
+      areaBreakdownVal.textContent = `Shape A (${area1}) + Shape B (${area2})`;
+
+      const p1 = getShapePerimeter(s1);
+      const p2 = getShapePerimeter(s2);
+
+      const totalSharedLength = sharedSegments.reduce((sum, seg) => sum + seg.length, 0);
+      const compositePerimeter = p1 + p2 - (2 * totalSharedLength);
+
+      totalPerimeterVal.textContent = `${formatNum(compositePerimeter)} units`;
+
+      if (totalSharedLength > 0.01) {
+        perimeterBreakdownVal.textContent = `${formatNum(p1)} + ${formatNum(p2)} − 2 × ${formatNum(totalSharedLength)} (joined edge)`;
+        explanationText.innerHTML = `
+          Shape A (perimeter <strong>${formatNum(p1)}</strong>) and Shape B (perimeter <strong>${formatNum(p2)}</strong>) share an inner edge of length <strong>${formatNum(totalSharedLength)} units</strong>.<br><br>
+          Because perimeter measures only the <em>outer boundary</em>, the joined edge length is subtracted twice (once from each shape).<br>
+          <strong>Composite Perimeter = ${formatNum(p1)} + ${formatNum(p2)} − (2 × ${formatNum(totalSharedLength)}) = ${formatNum(compositePerimeter)} units</strong>.
+        `;
+      } else {
+        perimeterBreakdownVal.textContent = `${formatNum(p1)} + ${formatNum(p2)} (shapes are separate)`;
+        explanationText.innerHTML = `
+          The two shapes are currently <strong>separate</strong>. Their total perimeter is simply the sum of individual perimeters (${formatNum(p1)} + ${formatNum(p2)} = <strong>${formatNum(p1 + p2)} units</strong>).<br><br>
+          Drag Shape A and Shape B together so they touch along a side to create a combined composite figure!
+        `;
+      }
+    }
+
+    function drawCanvas() {
+      const width = canvas.width / scaleDPI;
+      const height = canvas.height / scaleDPI;
+
+      ctx.clearRect(0, 0, width, height);
+      drawGrid(width, height);
+
+      const sharedSegments = getSharedSegments();
+
+      shapes.forEach(shape => {
+        const verts = getWorldVertices(shape);
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(verts[0].x * GRID_SIZE, verts[0].y * GRID_SIZE);
+        for (let i = 1; i < verts.length; i++) {
+          ctx.lineTo(verts[i].x * GRID_SIZE, verts[i].y * GRID_SIZE);
+        }
+        ctx.closePath();
+
+        ctx.fillStyle = shape.color;
+        ctx.fill();
+
+        ctx.strokeStyle = shape.strokeColor;
+        ctx.lineWidth = 3;
+        ctx.stroke();
+
+        const bbox = getShapeBoundingBox(shape);
+        const centerX = (bbox.minX + bbox.maxX) / 2 * GRID_SIZE;
+        const centerY = (bbox.minY + bbox.maxY) / 2 * GRID_SIZE;
+
+        ctx.fillStyle = '#0f172a';
+        ctx.font = 'bold 14px system-ui, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(shape.label, centerX, centerY);
+
+        ctx.restore();
+      });
+
+      if (showSharedSide && sharedSegments.length > 0) {
+        ctx.save();
+        sharedSegments.forEach(seg => {
+          ctx.beginPath();
+          ctx.moveTo(seg.p1.x * GRID_SIZE, seg.p1.y * GRID_SIZE);
+          ctx.lineTo(seg.p2.x * GRID_SIZE, seg.p2.y * GRID_SIZE);
+          ctx.strokeStyle = '#dc2626';
+          ctx.lineWidth = 6;
+          ctx.lineCap = 'round';
+          ctx.stroke();
+
+          const midX = (seg.p1.x + seg.p2.x) / 2 * GRID_SIZE;
+          const midY = (seg.p1.y + seg.p2.y) / 2 * GRID_SIZE;
+
+          const labelText = `Shared: ${formatNum(seg.length)}`;
+          ctx.font = 'bold 12px system-ui, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          const textMetrics = ctx.measureText(labelText);
+          const badgeWidth = textMetrics.width + 16;
+
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(midX - badgeWidth / 2, midY - 11, badgeWidth, 22);
+          ctx.strokeStyle = '#dc2626';
+          ctx.lineWidth = 1.5;
+          ctx.strokeRect(midX - badgeWidth / 2, midY - 11, badgeWidth, 22);
+
+          ctx.fillStyle = '#dc2626';
+          ctx.fillText(labelText, midX, midY + 1);
+        });
+        ctx.restore();
+      }
+
+      updateMeasurements(sharedSegments);
+    }
+
+    showSharedToggle.addEventListener('change', (e) => {
+      showSharedSide = e.target.checked;
+      drawCanvas();
+    });
+
+    document.getElementById('rotate1-btn').addEventListener('click', () => {
+      const s = shapes.find(s => s.id === 'shape1');
+      if (s) {
+        s.rotation = (s.rotation + 90) % 360;
+        drawCanvas();
+      }
+    });
+
+    document.getElementById('rotate2-btn').addEventListener('click', () => {
+      const s = shapes.find(s => s.id === 'shape2');
+      if (s) {
+        s.rotation = (s.rotation + 90) % 360;
+        drawCanvas();
+      }
+    });
+
+    document.getElementById('shape1-select').addEventListener('change', () => {
+      const s = shapes.find(s => s.id === 'shape1');
+      if (s) {
+        s.type = document.getElementById('shape1-select').value;
+        s.rotation = 0;
+        drawCanvas();
+      }
+    });
+
+    document.getElementById('shape2-select').addEventListener('change', () => {
+      const s = shapes.find(s => s.id === 'shape2');
+      if (s) {
+        s.type = document.getElementById('shape2-select').value;
+        s.rotation = 0;
+        drawCanvas();
+      }
+    });
+
+    document.getElementById('reset-canvas-btn').addEventListener('click', () => {
+      initShapes();
+      drawCanvas();
+    });
+
+
+    // --- SHAPE SORTING MINI ACTIVITY LOGIC ---
+    const MINI_ACTIVITY_ITEMS = [
+      {
+        id: 'item-l-shape',
+        title: 'Composite Shape 1',
+        correctTagId: 'tag-sq-rect',
+        correctLabel: 'Square + Rectangle',
+        draw: (ctx, w, h) => {
+          ctx.fillStyle = 'rgba(59, 130, 246, 0.5)';
+          ctx.fillRect(30, 20, 35, 65);
+          ctx.strokeRect(30, 20, 35, 65);
+
+          ctx.fillStyle = 'rgba(16, 185, 129, 0.5)';
+          ctx.fillRect(65, 50, 35, 35);
+          ctx.strokeRect(65, 50, 35, 35);
+
+          ctx.setLineDash([3, 3]);
+          ctx.strokeStyle = '#dc2626';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(65, 50); ctx.lineTo(65, 85);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+      },
+      {
+        id: 'item-house',
+        title: 'Composite Shape 2',
+        correctTagId: 'tag-sq-tri',
+        correctLabel: 'Square + Right Triangle',
+        draw: (ctx, w, h) => {
+          ctx.fillStyle = 'rgba(245, 158, 11, 0.5)';
+          ctx.fillRect(45, 45, 50, 50);
+          ctx.strokeRect(45, 45, 50, 50);
+
+          ctx.fillStyle = 'rgba(236, 72, 153, 0.5)';
+          ctx.beginPath();
+          ctx.moveTo(45, 45); ctx.lineTo(95, 45); ctx.lineTo(45, 15);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.setLineDash([3, 3]);
+          ctx.strokeStyle = '#dc2626';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(45, 45); ctx.lineTo(95, 45);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+      },
+      {
+        id: 'item-double-tri',
+        title: 'Composite Shape 3',
+        correctTagId: 'tag-tri-tri',
+        correctLabel: '2 Right Triangles',
+        draw: (ctx, w, h) => {
+          ctx.fillStyle = 'rgba(139, 92, 246, 0.5)';
+          ctx.beginPath();
+          ctx.moveTo(35, 30); ctx.lineTo(105, 30); ctx.lineTo(35, 80);
+          ctx.closePath();
+          ctx.fill(); ctx.stroke();
+
+          ctx.fillStyle = 'rgba(6, 182, 212, 0.5)';
+          ctx.beginPath();
+          ctx.moveTo(105, 30); ctx.lineTo(105, 80); ctx.lineTo(35, 80);
+          ctx.closePath();
+          ctx.fill(); ctx.stroke();
+
+          ctx.setLineDash([3, 3]);
+          ctx.strokeStyle = '#dc2626';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(35, 80); ctx.lineTo(105, 30);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+      },
+      {
+        id: 'item-trapezoid',
+        title: 'Composite Shape 4',
+        correctTagId: 'tag-rect-tri',
+        correctLabel: 'Rectangle + Right Triangle',
+        draw: (ctx, w, h) => {
+          ctx.fillStyle = 'rgba(16, 185, 129, 0.5)';
+          ctx.fillRect(30, 35, 45, 45);
+          ctx.strokeRect(30, 35, 45, 45);
+
+          ctx.fillStyle = 'rgba(236, 72, 153, 0.5)';
+          ctx.beginPath();
+          ctx.moveTo(75, 35); ctx.lineTo(110, 80); ctx.lineTo(75, 80);
+          ctx.closePath();
+          ctx.fill(); ctx.stroke();
+
+          ctx.setLineDash([3, 3]);
+          ctx.strokeStyle = '#dc2626';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(75, 35); ctx.lineTo(75, 80);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+      }
+    ];
+
+    const PALETTE_OPTIONS = [
+      { id: 'tag-sq-rect', label: 'Square + Rectangle' },
+      { id: 'tag-sq-tri', label: 'Square + Right Triangle' },
+      { id: 'tag-tri-tri', label: '2 Right Triangles' },
+      { id: 'tag-rect-tri', label: 'Rectangle + Right Triangle' }
+    ];
+
+    let userMatches = {};
+    let selectedPaletteTagId = null;
+
+    function renderActivity() {
+      const grid = document.getElementById('matching-grid');
+      const palette = document.getElementById('draggable-palette');
+      grid.innerHTML = '';
+      palette.innerHTML = '';
+
+      MINI_ACTIVITY_ITEMS.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'matching-card';
+        card.dataset.itemId = item.id;
+
+        const canvasElem = document.createElement('canvas');
+        canvasElem.className = 'shape-preview-canvas';
+        canvasElem.width = 150 * scaleDPI;
+        canvasElem.height = 110 * scaleDPI;
+
+        card.appendChild(canvasElem);
+
+        const title = document.createElement('h3');
+        title.textContent = item.title;
+        card.appendChild(title);
+
+        const dropTarget = document.createElement('div');
+        dropTarget.className = 'drop-target';
+        dropTarget.dataset.itemId = item.id;
+
+        const assignedTagId = userMatches[item.id];
+        if (assignedTagId) {
+          const matchedOption = PALETTE_OPTIONS.find(o => o.id === assignedTagId);
+          dropTarget.textContent = matchedOption ? matchedOption.label : '';
+          dropTarget.classList.add('filled');
+        } else {
+          dropTarget.textContent = 'Drop or Tap Option Here';
+        }
+
+        dropTarget.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          dropTarget.classList.add('drag-over');
+        });
+        dropTarget.addEventListener('dragleave', () => {
+          dropTarget.classList.remove('drag-over');
+        });
+        dropTarget.addEventListener('drop', (e) => {
+          e.preventDefault();
+          dropTarget.classList.remove('drag-over');
+          const tagId = e.dataTransfer.getData('text/plain');
+          if (tagId) {
+            assignMatch(item.id, tagId);
+          }
+        });
+
+        dropTarget.addEventListener('click', () => {
+          if (selectedPaletteTagId) {
+            assignMatch(item.id, selectedPaletteTagId);
+            selectedPaletteTagId = null;
+          } else if (userMatches[item.id]) {
+            delete userMatches[item.id];
+            renderActivity();
+            validateActivity();
+          }
+        });
+
+        const feedbackMsg = document.createElement('div');
+        feedbackMsg.className = 'feedback-msg';
+        feedbackMsg.id = `feedback-${item.id}`;
+        card.appendChild(dropTarget);
+        card.appendChild(feedbackMsg);
+
+        grid.appendChild(card);
+
+        const pCtx = canvasElem.getContext('2d');
+        pCtx.scale(scaleDPI, scaleDPI);
+        pCtx.strokeStyle = '#1e293b';
+        pCtx.lineWidth = 2;
+        item.draw(pCtx, 150, 110);
+      });
+
+      PALETTE_OPTIONS.forEach(opt => {
+        const tag = document.createElement('div');
+        tag.className = 'draggable-tag';
+        tag.textContent = opt.label;
+        tag.dataset.tagId = opt.id;
+        tag.draggable = true;
+
+        const isUsed = Object.values(userMatches).includes(opt.id);
+        if (isUsed) tag.classList.add('used');
+        if (selectedPaletteTagId === opt.id) tag.classList.add('selected');
+
+        tag.addEventListener('dragstart', (e) => {
+          e.dataTransfer.setData('text/plain', opt.id);
+        });
+
+        tag.addEventListener('click', () => {
+          if (selectedPaletteTagId === opt.id) {
+            selectedPaletteTagId = null;
+          } else {
+            selectedPaletteTagId = opt.id;
+          }
+          renderActivity();
+        });
+
+        palette.appendChild(tag);
+      });
+
+      validateActivity();
+    }
+
+    function assignMatch(itemId, tagId) {
+      for (let key in userMatches) {
+        if (userMatches[key] === tagId) {
+          delete userMatches[key];
+        }
+      }
+      userMatches[itemId] = tagId;
+      renderActivity();
+    }
+
+    function validateActivity() {
+      let score = 0;
+      MINI_ACTIVITY_ITEMS.forEach(item => {
+        const card = document.querySelector(`.matching-card[data-item-id="${item.id}"]`);
+        const feedback = document.getElementById(`feedback-${item.id}`);
+        if (!card || !feedback) return;
+
+        const assigned = userMatches[item.id];
+        card.classList.remove('correct', 'incorrect');
+        feedback.classList.remove('correct', 'incorrect');
+
+        if (assigned) {
+          if (assigned === item.correctTagId) {
+            score++;
+            card.classList.add('correct');
+            feedback.textContent = '✓ Correct decomposition!';
+            feedback.classList.add('correct');
+          } else {
+            card.classList.add('incorrect');
+            feedback.textContent = '✗ Try again';
+            feedback.classList.add('incorrect');
+          }
+        } else {
+          feedback.textContent = '';
+        }
+      });
+
+      document.getElementById('activity-score').textContent = `Score: ${score} / ${MINI_ACTIVITY_ITEMS.length}`;
+    }
+
+    document.getElementById('reset-activity-btn').addEventListener('click', () => {
+      userMatches = {};
+      selectedPaletteTagId = null;
+      renderActivity();
+    });
+
+    window.addEventListener('resize', resizeCanvas);
+    window.addEventListener('load', () => {
+      initShapes();
+      resizeCanvas();
+      renderActivity();
+    });
+  </script>
+</body>
+</html>
